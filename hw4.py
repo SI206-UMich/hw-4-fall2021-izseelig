@@ -74,7 +74,7 @@ class Cashier:
 class Stall:
     def __init__(self, name, inventory, cost = 7, earnings = 0):
         self.name = name
-        self. inventory = inventory
+        self.inventory = inventory
         self.cost = cost
         self.earnings = earnings
     
@@ -92,6 +92,25 @@ class Stall:
             return True
         else:
             return False
+    
+    def stock_up(self, food_name, quantity):
+        if food_name in self.inventory:
+            self.inventory[food_name] = self.inventory[food_name] + quantity
+        else:
+            self.inventory[food_name] = quantity
+
+    def compute_cost(self, quantity):
+        total = (quantity * self.cost)
+        return total
+
+
+    def __str__(self):
+        keys = ""
+        for item in self.invetory:
+            keys + keys + item + ","
+        keys = keys[0:-2]
+        keys = keys.lower()
+        return "Hello, we are " + self.name + ". This is the current menu " + keys + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + "in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -176,42 +195,78 @@ class TestAllMethods(unittest.TestCase):
         # Test to see if has_item returns True when a stall has enough items left
         # Please follow the instructions below to create three different kinds of test cases 
         # Test case 1: the stall does not have this food item: 
-        
+        self.assertFalse(self.s1.has_item("Tacos", 2))
         # Test case 2: the stall does not have enough food item: 
-        
+        self.assertFalse(self.s1.has_item("Burger", 45))
         # Test case 3: the stall has the food item of the certain quantity: 
-        pass
+        self.assertTrue(self.s1.has_item("Burger", 20))
 
 	# Test validate order
     def test_validate_order(self):
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-
+        print("test_validate_order case 1: ")
+        self.f1.validate_order(self.c1, self.s1, "Burger", 20)
+        print("Don't have enough money for that :( Please reload more money!")
 		# case 2: test if the stall doesn't have enough food left in stock
-
+        print("test_validate_order case 2: ")
+        self.s2.stock_up("Pizza", 2)
+        self.f1.validate_order(self.c2, self.s2, "Pizza", 100)
+        print("Our stall has run out of Pizza :( Please try a different stall!")
 		# case 3: check if the cashier can order item from that stall
-        pass
+        print("test_validate_order case 3:")
+        self.s4 = Stall("This Stall", inventory = {})
+        self.f2.validate_order(self.c2, self.s4, "Taco", 35)
+        print("Sorry, we don't have that vendor stall. Please try a different one.")
+
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
-        pass
+        print("test_reload_money: not enough to start")
+        self.f1.validate_order(self.c1, self.s1, "Burger", 20)
+        print("Adding money to customer's wallet now. This customer should have enough to buy.")
+        self.f1.reload_money(100)
+        self.f1.validate_order(self.c1, self.s1, "Burger", 20)
+        print(self.s1.__str__())
     
 ### Write main function
 def main():
     #Create different objects 
+    inventory_1 = {"Chicken":50, "Fries":10, "Pizza": 20} 
+    inventory_2 = {"Soup":5, "Steak":40, "Taco":30}
 
+    c1 = Customer("Isabelle", 200)
+    c2 = Customer("Arianna", 100)
+    c3 = Customer("Leon", 20)
+
+    stall_1 = Stall("Stray Hen Stall", inventory_1, 5)
+    stall_2 = Stall ("Zinngermans Stall", inventory_2, 10)
+
+    cash1 = Cashier("Brooke", [stall_1])
+    cash2 = Cashier("Alexis",[stall_1, stall_2])
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
-    
+    print("Cashier does not have the stall:")
+    c1.validate_order(cash1, stall_2, "Fries", 12)
+    c2.validate_order(cash1, stall_2, "Fries", 12)
+    c3.validate_order(cash1, stall_2, "Chicken", 3)
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
-    
+    print("Cashier has the stall, but not enough ordered food or the ordered food item:")
+    c1.validate_order(cash1, stall_1, "Ice Cream", 2)
+    c3.validate_order(cash2, stall_1, "Pizza", 100)
     #case 3: the customer does not have enough money to pay for the order: 
-    
+    print("Customer does not have enough money to pay for the order:")
+    c1.validate_order(cash2, stall_2, "Soup", 1)
+    c2.validate_order(cash2, stall_2, "Steak", 1)
+    c3.validate_order(cash1, stall_1, "Taco", 2)
     #case 4: the customer successfully places an order
+    print("Orders go though. Nothing should be printed after this.")
+    c1.validate_order(cash1, stall_1, "Fries", 15)
+    c2.validate_order(cash2, stall_2, "Soup", 10)
 
-    pass
+pass
 
 if __name__ == "__main__":
-	main()
-	print("\n")
-	unittest.main(verbosity = 2)
+    main()
+    print("\n")
+    unittest.main(verbosity = 2)
