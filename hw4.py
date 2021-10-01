@@ -100,17 +100,16 @@ class Stall:
             self.inventory[food_name] = quantity
 
     def compute_cost(self, quantity):
-        total = (quantity * self.cost)
-        return total
+        return self.cost * quantity
 
 
     def __str__(self):
         keys = ""
-        for item in self.invetory:
+        for item in self.inventory:
             keys + keys + item + ","
         keys = keys[0:-2]
         keys = keys.lower()
-        return "Hello, we are " + self.name + ". This is the current menu " + keys + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + "in total."
+        return "Hello, we are " + self.name + ". This is the current menu " + keys + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + " in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -184,9 +183,12 @@ class TestAllMethods(unittest.TestCase):
 	# Test that computed cost works properly.
     def test_compute_cost(self):
         #what's wrong with the following statements?
+        inventory_1 = {"Chicken": 50, "Fries": 50}
+        s5 = Stall("stall 5", inventory_1)
         #can you correct them?
-        self.assertEqual(self.s1.compute_cost(self.s1,5), 51)
-        self.assertEqual(self.s3.compute_cost(self.s3,6), 45)
+        self.assertEqual(s5.compute_cost(5), 35)
+        self.assertEqual(self.s1.compute_cost(5), 35)
+        self.assertEqual(self.s3.compute_cost(6), 42)
 
 	# Check that the stall can properly see when it is empty
     def test_has_item(self):
@@ -231,8 +233,8 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     #Create different objects 
-    inventory_1 = {"Chicken":50, "Fries":10, "Pizza": 20} 
-    inventory_2 = {"Soup":5, "Steak":40, "Taco":30}
+    inventory_1 = dict({"Chicken":50, "Fries":10, "Pizza": 20}) 
+    inventory_2 = dict({"Soup":5, "Steak":40, "Taco":30})
 
     c1 = Customer("Isabelle", 200)
     c2 = Customer("Arianna", 100)
